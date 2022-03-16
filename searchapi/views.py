@@ -1,7 +1,15 @@
 from rest_framework.decorators import api_view 
 from rest_framework.response import Response
-from .serializers import SerializerDataImg , SerializerDataVideo
-from .models import DataImageStores, DataVideoStores
+from .serializers import SerializerDataImg 
+from .serializers import SerializerDataVideo
+from .serializers import SerializerDataTours
+from .serializers import SerializerDataEmployes
+from .serializers import SerializerDataQuestions
+from .models import DataImageStores
+from .models import Questions
+from .models import Employes
+from .models import DataVideoStores
+from .models import ToursData
 # Create your views here.
 @api_view(['GET'])
 def Search(request):
@@ -17,10 +25,7 @@ def Search(request):
                     serializer = SerializerDataImg(data , many = True)
                     return Response(serializer.data,status=200)
                 else :
-                    notFound =  {
-                        'NotFound':'We have\'nt found'
-                    }
-                    return Response(notFound)
+                    return Response([])
             else:
                 error = {'error':'Error'}
                 return Response(error,status=400)
@@ -56,3 +61,29 @@ def SearchFunc(key : str , data : list) -> list:
         if obj.title.lower().count(key.lower()) >= 1:
             newData.append(obj)
     return newData
+
+
+# madel Tours
+@api_view(['GET'])
+def ToursDataRender(request):
+    Tours = ToursData.objects.all()
+    serializer = SerializerDataTours(Tours , many = True)
+    return Response(serializer.data,status=200)
+
+
+@api_view(['GET'])
+def GetEmployes(request):
+    employes = Employes.objects.all()
+    serializer = SerializerDataEmployes(employes , many = True)
+    if serializer.data is not []:
+        return Response(serializer.data,status=200)
+    else:
+        return Response([])
+@api_view(['GET'])
+def GetQuestions(request):
+    questions = Questions.objects.all()
+    serializer = SerializerDataQuestions(questions , many = True)
+    if serializer is not []:
+        return Response(serializer.data , status=200)
+    else :
+        return Response([])
